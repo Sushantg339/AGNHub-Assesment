@@ -1,5 +1,6 @@
-import { success } from "zod"
-import serviceModel from "../models/service.model"
+
+import mongoose from "mongoose"
+import serviceModel from "../models/service.model.js"
 
 export const getAllServicesController = async(req , res)=>{
     try {
@@ -13,7 +14,7 @@ export const getAllServicesController = async(req , res)=>{
         console.log(error)
         res.status(500).json({
             success: false,
-            data : '',
+            data : null,
             message : "Internal Server Error!"
         })
     }
@@ -28,21 +29,21 @@ export const getSingleServiceController = async (req, res)=>{
         if(!service){
             return res.status(404).json({
                 success : false,
-                data : '',
+                data : null,
                 message : "Service not found"
             })
         }
 
         return res.status(200).json({
             success : true,
-            data : services,
+            data : service,
             message : "Service Fetched Successfully!"
         })
     } catch (error) {
         console.log(error)
         res.status(500).json({
             success: false,
-            data : '',
+            data : null,
             message : "Internal Server Error!"
         })
     }
