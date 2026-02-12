@@ -1,11 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FaChartLine, FaLightbulb, FaHandshake, FaBullhorn, FaUsers, FaCogs } from 'react-icons/fa';
 import ServiceCard from '../components/ServiceCard';
 import './Home.css';
+import axios from '../api/axiosConfig';
+import Loader from '../components/Loader';
 
 const Home = () => {
+    const [services, setServices] = useState([])
+    const [loading, setLoading] = useState(true)
+    useEffect(() => {
+        const fetchServices = async () => {
+        try {
+            const res = await axios.get("/services");
+            const firstThree = res.data.data.slice(0, 3);
+            setServices(firstThree);
+            setLoading(false)
+        } catch (err) {
+            console.error("Error fetching services:", err);
+        }
+        };
+
+        fetchServices();
+    }, []);
     return (
         <div className="home-container">
             <section className="hero-section">
@@ -75,30 +93,15 @@ const Home = () => {
                     <p>Explore our core offerings designed to drive your business forward.</p>
                 </div>
                 <div className="services-grid">
-                    <motion.div whileHover={{ y: -10 }}>
-                        <ServiceCard 
-                            icon={<FaChartLine />}
-                            title="Business Strategy"
-                            description="Develop a roadmap for success with our comprehensive strategic planning services."
-                            link="/services/strategy"
-                        />
-                    </motion.div>
-                    <motion.div whileHover={{ y: -10 }}>
-                        <ServiceCard 
-                            icon={<FaBullhorn />}
-                            title="Marketing Strategy"
-                            description="Reach your target audience effectively with data-driven marketing campaigns."
-                            link="/services/marketing"
-                        />
-                    </motion.div>
-                    <motion.div whileHover={{ y: -10 }}>
-                        <ServiceCard 
-                            icon={<FaCogs />}
-                            title="Operations Optimization"
-                            description="Streamline processes and improve efficiency across your organization."
-                            link="/services/operations"
-                        />
-                    </motion.div>
+                    {loading ? <Loader/> : services.map((service)=>{
+                        return (<motion.div key={service._id} whileHover={{ y: -10 }}>
+                            <ServiceCard 
+                                title={service.title}
+                                description={service.shortDescription}
+                                link={`/services/${service._id}`}
+                            />
+                        </motion.div>)
+                    })}
                 </div>
                 <div className="center-btn-container" style={{ textAlign: 'center', marginTop: '40px' }}>
                      <Link to="/services" className="btn btn-secondary">View All Services</Link>
